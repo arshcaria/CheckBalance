@@ -7,9 +7,9 @@
     <uses-sdk
         android:minSdkVersion="17"
         android:targetSdkVersion="17" />
-    
-    <uses-permission android:name="android.permission.SEND_SMS"/> 
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/> 
+
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
 
     <application
         android:allowBackup="true"
@@ -25,12 +25,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name=".SmsReceiver" >
+            <intent-filter android:priority="999" >
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                <action android:name="ACTION_WIDGET_REQUEST_UPDATE" />
+            </intent-filter>
+        </receiver>
         
-        <receiver android:name=".SmsReceiver">    
-          <intent-filter android:priority="999">    
-              <action android:name="android.provider.Telephony.SMS_RECEIVED"/>    
-          </intent-filter>    
-      </receiver>   
+        <receiver android:name="CBAppWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="ACTION_UPDATE_WIDGET" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/cb_appwidget_info" />
+        </receiver>
     </application>
 
 </manifest>

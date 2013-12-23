@@ -18,8 +18,6 @@ public class SmsReceiver extends BroadcastReceiver {
 		// 判断是系统短信；
 		if (intent.getAction()
 				.equals("android.provider.Telephony.SMS_RECEIVED")) {
-			// 不再往下传播；
-			this.abortBroadcast();
 			StringBuffer sb = new StringBuffer();
 			String sender = null;
 			String content = null;
@@ -56,24 +54,29 @@ public class SmsReceiver extends BroadcastReceiver {
 					// }
 				}
 				if (sb.toString().contains("时，您的话费余额是")) {
+					this.abortBroadcast();
 					Toast.makeText(context, "此为话费余额短信", Toast.LENGTH_SHORT)
 							.show();
 					CBApplication.msgContent = sb.toString();
+					Pattern p = Pattern.compile("截至\\d*月\\d*日\\d*时，您的话费余额是(\\d*\\.\\d*)元");
+					Matcher match = p.matcher(sb.toString());
+					String r = "";
+					
+					while (match.find()) {
+						r += match.group(1);
+					}
+					
+					Toast.makeText(context, r, Toast.LENGTH_LONG).show();
+					
+					Intent i = new Intent();
+					i.setAction("ACTION_UPDATE_WIDGET");
+					i.putExtra("BALANCE", r);
+					context.sendBroadcast(i);
 				} else {
 					Toast.makeText(context, "不是~~~", Toast.LENGTH_SHORT).show();
 				}
 				Toast.makeText(context, sb.toString(), Toast.LENGTH_SHORT)
 						.show();
-
-				String s = "尊敬的客户，您好!截至12月22日21时，您的话费余额是42.08元.本月可用的赠款额度0.50元,其中当前已用0.50元, 拨打10086选择2号键“手机充值”再选择“银行卡充值”，即可随时随地使用银行卡为全国移动号码交费，无需开通网银，交费还享99折！欢迎使用。";
-				Pattern p = Pattern.compile("时，您的话费余额是(\\d*\\.\\d*)元");
-				Matcher match = p.matcher(s);
-				String r = "";
-				while (match.find()) {
-					r += match.group(1);
-				}
-				
-				Toast.makeText(context, r, Toast.LENGTH_LONG).show();
 
 			}
 
